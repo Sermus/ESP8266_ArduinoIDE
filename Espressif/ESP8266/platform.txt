@@ -72,11 +72,12 @@ recipe.objcopy.eep.pattern=
 ## Create hex
 utils.MemAnalyze.cmd=mono "{utils.path}/MemAnalyzer.exe" "{compiler.path}{compiler.objdump.cmd}.exe" "{build.path}/{build.project_name}.elf"
 utils.MemAnalyze.cmd.windows="{utils.path}\MemAnalyzer.exe" "{compiler.path}{compiler.objdump.cmd}.exe" "{build.path}/{build.project_name}.elf"
+recipe.objcopy.step0.remove.bin.pattern=cmd /c if exist "{build.path}/eagle.app.v6.*" del /Q "{build.path}\eagle.app.*"
 recipe.objcopy.step1.text.bin.pattern="{compiler.path}{compiler.objcopy.cmd}" --only-section .text -O binary "{build.path}/{build.project_name}.elf" "{build.path}/eagle.app.v6.text.bin"
 recipe.objcopy.step2.data.bin.pattern="{compiler.path}{compiler.objcopy.cmd}" --only-section .data -O binary "{build.path}/{build.project_name}.elf" "{build.path}/eagle.app.v6.data.bin"
 recipe.objcopy.step3.rodata.bin.pattern="{compiler.path}{compiler.objcopy.cmd}" --only-section .rodata -O binary "{build.path}/{build.project_name}.elf" "{build.path}/eagle.app.v6.rodata.bin"
 recipe.objcopy.step4.irom0.text.bin.pattern="{compiler.path}{compiler.objcopy.cmd}" --only-section .irom0.text -O binary "{build.path}/{build.project_name}.elf" "{build.path}/eagle.app.v6.irom0.text.bin"
-recipe.objcopy.step5.gen_appbin.pattern=cmd /c cd /d "{build.path}" && "{utils.path}gen_appbin.exe" "{build.path}/{build.project_name}.elf" 0 0 0 0
+recipe.objcopy.step5.gen_appbin.pattern=cmd /c cd /d "{build.path}" && "{utils.path}gen_appbin.exe" "{build.project_name}.elf" 0 0 0 0
 recipe.objcopy.step6.MemAnalyze.pattern={utils.MemAnalyze.cmd}
 
 ## Compute size
@@ -94,4 +95,4 @@ tools.esptool.upload.params.verbose=
 tools.esptool.upload.params.quiet=
 #tools.serial_upload.cmd.linux=
 tools.esptool.path={runtime.hardware.path}/ESP8266/utils
-tools.esptool.upload.pattern="{path}/{cmd}" -p {serial.port.file} -b 256000 write_flash 0x00000 {build.path}/eagle.flash.bin 0x10000 {build.path}/eagle.irom0text.bin
+tools.esptool.upload.pattern="{path}/{cmd}" -p {serial.port.file} -b 256000 write_flash 0x00000 {build.path}/eagle.app.flash.bin 0x10000 {build.path}/eagle.app.v6.irom0.text.bin

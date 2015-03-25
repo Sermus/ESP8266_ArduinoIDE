@@ -4,15 +4,6 @@
 extern void setup();
 extern void loop();
 
-Timer procTimer;
-
-bool ok = false;
-void onTimer()
-{
-	loop();
-}
-
-
 extern "C" void user_init(void)
 {
 	system_timer_reinit();
@@ -21,5 +12,5 @@ extern "C" void user_init(void)
 	System.initialize();
 	
 	setup();
-	procTimer.initializeMs(0, onTimer).start();
+	while (1) loop();
 }
