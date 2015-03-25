@@ -1,0 +1,97 @@
+
+# ESP8266 Core and platform.
+# ------------------------------
+
+# For more info:
+# https://github.com/arduino/Arduino/wiki/Arduino-IDE-1.5---3rd-party-Hardware-specification
+
+name=ESP8266 Boards
+version=1.6.1
+
+# ESP8266 compile variables
+# --------------------- 
+
+# Default "compiler.path" is correct, change only if you want to overidde the initial value
+utils.path={runtime.hardware.path}/ESP8266/utils/
+sdk.path={runtime.hardware.path}/ESP8266/ESP8266_SDK 
+compiler.path={runtime.hardware.path}/ESP8266/xtensa-lx106-elf/bin/
+compiler.additionalincludes=-I{build.core.path}\Sming\Sming\include -I{build.core.path}\Sming\Sming\SmingCore -I{build.core.path}\Sming\Sming\Wiring -I{build.core.path}\Sming\Sming\system -I{build.core.path}\Sming\Sming\system\include -I{build.core.path}\Sming\Sming\Services\ArduinoJson -I{build.core.path}\Sming\Sming\Services\DateTime -I{build.core.path}\Sming\Sming\Services\SpifFS -I{build.core.path}\Sming\Sming\Services\WebHelpers -I{sdk.path}\include
+compiler.libs=-lc -lgcc -lhal -lphy -lpp -lnet80211 -lopenlwip -lwpa -lmain -lm
+compiler.additionallibdir="-L{sdk.path}\lib" "-L{build.core.path}\Sming\Sming\compiler\lib"
+compiler.c.cmd=xtensa-lx106-elf-gcc
+compiler.c.flags=-MMD -Os -g -O2 -Wpointer-arith -Wundef -Werror -Wl,-EL -nostdlib -mlongcalls -mtext-section-literals -D__ets__ -DICACHE_FLASH -DICACHE_IRAM_ATTR='__attribute__((section(".text")))' -ffunction-sections -fdata-sections -Wno-write-strings
+compiler.c.elf.flags=
+compiler.c.elf.cmd=xtensa-lx106-elf-gcc
+compiler.S.flags=-c -g -x assembler-with-cpp
+compiler.cpp.cmd=xtensa-lx106-elf-g++
+compiler.cpp.flags={compiler.c.flags} -fno-rtti -fno-exceptions -std=c++11
+compiler.ar.cmd=xtensa-lx106-elf-ar
+compiler.ar.flags=rcs
+compiler.objcopy.cmd=xtensa-lx106-elf-objcopy
+compiler.objdump.cmd=xtensa-lx106-elf-objdump
+compiler.elf2hex.flags=
+compiler.elf2hex.cmd=elf2bin.cmd
+compiler.ldflags= -nostdlib -Wl,--no-check-sections -u call_user_start -Wl,-static
+compiler.size.cmd=xtensa-lx106-elf-size
+build.ldscript={sdk.path}/ld/eagle.app.v6.cpp.irom.ld 
+
+# This can be overriden in boards.txt
+build.extra_flags=
+
+# These can be overridden in platform.local.txt
+compiler.c.extra_flags=
+compiler.c.elf.extra_flags="-L{sdk.path}/ld"
+compiler.S.extra_flags=
+compiler.cpp.extra_flags=
+compiler.ar.extra_flags=
+compiler.objcopy.eep.extra_flags=
+compiler.elf2hex.extra_flags=
+
+# build patterns
+# ---------------------
+
+## Compile c files
+recipe.c.o.pattern="{compiler.path}{compiler.c.cmd}" {compiler.c.flags} -DF_CPU={build.f_cpu} -DARDUINO={runtime.ide.version} -DARDUINO_{build.board} -DARDUINO_ARCH_{build.arch} {compiler.c.extra_flags} {build.extra_flags} {includes} {compiler.additionalincludes} -c "{source_file}" -o "{object_file}"
+
+## Compile c++ files
+recipe.cpp.o.pattern="{compiler.path}{compiler.cpp.cmd}" {compiler.cpp.flags}  -DF_CPU={build.f_cpu} -DARDUINO={runtime.ide.version} -DARDUINO_{build.board} -DARDUINO_ARCH_{build.arch} {compiler.cpp.extra_flags} {build.extra_flags} {includes} {compiler.additionalincludes} -c "{source_file}" -o "{object_file}"
+
+## Compile S files
+recipe.S.o.pattern="{compiler.path}{compiler.c.cmd}" {compiler.S.flags} -mcpu={build.mcu} -DF_CPU={build.f_cpu} -DARDUINO={runtime.ide.version} -DARDUINO_{build.board} -DARDUINO_ARCH_{build.arch} {compiler.S.extra_flags} {build.extra_flags} {includes} {compiler.additionalincludes} -c"{source_file}" -o "{object_file}"
+#recipe.S.o.pattern="{compiler.path}{compiler.c.cmd}" "{source_file}" -o "{object_file}"
+
+## Create archives
+recipe.ar.pattern="{compiler.path}{compiler.ar.cmd}" {compiler.ar.flags} {compiler.ar.extra_flags} "{build.path}/{archive_file}" "{object_file}"
+
+## Combine gc-sections, archives, and objects
+recipe.c.combine.pattern="{compiler.path}{compiler.c.elf.cmd}" {compiler.c.elf.flags} "-T{build.ldscript}" "-Wl,-Map,{build.path}/{build.project_name}.map" {compiler.c.elf.extra_flags} -o "{build.path}/{build.project_name}.elf" "-L{build.path}" {compiler.additionallibdir} -nostdlib -Wl,--no-check-sections -u call_user_start -Wl,-static -Wl,--start-group {object_files} {compiler.libs} "{build.path}/{archive_file}" -Wl,--end-group
+
+## Create eeprom
+recipe.objcopy.eep.pattern=
+
+## Create hex
+utils.MemAnalyze.cmd=mono "{utils.path}/MemAnalyzer.exe" "{compiler.path}{compiler.objdump.cmd}.exe" "{build.path}/{build.project_name}.elf"
+utils.MemAnalyze.cmd.windows="{utils.path}\MemAnalyzer.exe" "{compiler.path}{compiler.objdump.cmd}.exe" "{build.path}/{build.project_name}.elf"
+recipe.objcopy.step1.text.bin.pattern="{compiler.path}{compiler.objcopy.cmd}" --only-section .text -O binary "{build.path}/{build.project_name}.elf" "{build.path}/eagle.app.v6.text.bin"
+recipe.objcopy.step2.data.bin.pattern="{compiler.path}{compiler.objcopy.cmd}" --only-section .data -O binary "{build.path}/{build.project_name}.elf" "{build.path}/eagle.app.v6.data.bin"
+recipe.objcopy.step3.rodata.bin.pattern="{compiler.path}{compiler.objcopy.cmd}" --only-section .rodata -O binary "{build.path}/{build.project_name}.elf" "{build.path}/eagle.app.v6.rodata.bin"
+recipe.objcopy.step4.irom0.text.bin.pattern="{compiler.path}{compiler.objcopy.cmd}" --only-section .irom0.text -O binary "{build.path}/{build.project_name}.elf" "{build.path}/eagle.app.v6.irom0.text.bin"
+recipe.objcopy.step5.gen_appbin.pattern=cmd /c cd /d "{build.path}" && "{utils.path}gen_appbin.exe" "{build.path}/{build.project_name}.elf" 0 0 0 0
+recipe.objcopy.step6.MemAnalyze.pattern={utils.MemAnalyze.cmd}
+
+## Compute size
+recipe.size.pattern="{compiler.path}{compiler.size.cmd}" -A "{build.path}/{build.project_name}.elf"
+#recipe.size.regex=\.text\s+([0-9]+).*
+recipe.size.regex=^(?:\.text|\.rodata)\s+([0-9]+).*
+recipe.size.regex.data=^(?:\.data|\.bss|\.noinit)\s+([0-9]+).*
+
+
+# ESP Uploader/Programmers tools
+# ------------------------------
+tools.esptool.cmd=esptool.py
+tools.esptool.cmd.windows=esptool.exe
+tools.esptool.upload.params.verbose=
+tools.esptool.upload.params.quiet=
+#tools.serial_upload.cmd.linux=
+tools.esptool.path={runtime.hardware.path}/ESP8266/utils
+tools.esptool.upload.pattern="{path}/{cmd}" -p {serial.port.file} -b 256000 write_flash 0x00000 {build.path}/eagle.flash.bin 0x10000 {build.path}/eagle.irom0text.bin

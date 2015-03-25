@@ -1,0 +1,12 @@
+# See: http://code.google.com/p/arduino/wiki/Platforms
+
+menu.cpu=Processor
+
+##############################################################
+
+esp8266.name=ESP8266
+esp8266.build.f_cpu=80000000L
+esp8266.build.core=esp8266
+esp8266.upload.tool=esptool
+esp8266.upload.protocol=esptool
+esp8266.build.mcu=lx106
