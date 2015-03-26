@@ -120,7 +120,7 @@ def gen_appbin():
     data_str = ''
     sum_size = 0
 
-    cmd = 'C:\\Espressif\\xtensa-lx106-elf\\bin\\xtensa-lx106-elf-nm -g ' + elf_file + ' > eagle.app.sym'
+    cmd = os.path.dirname(sys.argv[0]) + '\\..\\xtensa-lx106-elf\\bin\\xtensa-lx106-elf-nm -g ' + elf_file + ' > eagle.app.sym'
 
     os.system(cmd)
 
