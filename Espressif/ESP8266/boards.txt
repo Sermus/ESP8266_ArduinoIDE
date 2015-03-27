@@ -1,6 +1,6 @@
 # See: http://code.google.com/p/arduino/wiki/Platforms
 
-menu.SerialSpeed=Serial Speed
+menu.SerialSpeed=Upload Speed
 esp8266.menu.SerialSpeed.115200=115200
 esp8266.menu.SerialSpeed.115200.upload.speed=115200
 esp8266.menu.SerialSpeed.9600=9600
