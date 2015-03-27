@@ -1,12 +1,25 @@
 # See: http://code.google.com/p/arduino/wiki/Platforms
 
-menu.cpu=Processor
+menu.SerialSpeed=Serial Speed
+esp8266.menu.SerialSpeed.115200=115200
+esp8266.menu.SerialSpeed.115200.upload.speed=115200
+esp8266.menu.SerialSpeed.9600=9600
+esp8266.menu.SerialSpeed.9600.upload.speed=9600
+esp8266.menu.SerialSpeed.57600=57600
+esp8266.menu.SerialSpeed.57600.upload.speed=57600
+esp8266.menu.SerialSpeed.256000=256000
+esp8266.menu.SerialSpeed.256000.upload.speed=256000
+esp8266.menu.SerialSpeed.921600=921600
+esp8266.menu.SerialSpeed.921600.upload.speed=921600
 
 ##############################################################
 
 esp8266.name=ESP8266
 esp8266.build.f_cpu=80000000L
 esp8266.build.core=esp8266
+esp8266.build.mcu=lx106
+
 esp8266.upload.tool=esptool
 esp8266.upload.protocol=esptool
-esp8266.build.mcu=lx106
+
+esp8266.bootloader.tool=esptool

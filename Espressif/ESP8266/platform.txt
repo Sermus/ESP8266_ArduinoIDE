@@ -91,8 +91,21 @@ recipe.size.regex.data=^(?:\.data|\.bss|\.noinit)\s+([0-9]+).*
 # ------------------------------
 tools.esptool.cmd=esptool.py
 tools.esptool.cmd.windows=esptool.exe
+tools.esptool.path={runtime.hardware.path}/ESP8266/utils
+tools.esptool.binpath={runtime.hardware.path}/ESP8266/ESP8266_SDK/bin
+
 tools.esptool.upload.params.verbose=
 tools.esptool.upload.params.quiet=
-#tools.serial_upload.cmd.linux=
-tools.esptool.path={runtime.hardware.path}/ESP8266/utils
-tools.esptool.upload.pattern="{path}/{cmd}" -p {serial.port.file} -b 256000 write_flash 0x00000 {build.path}/eagle.app.flash.bin 0x10000 {build.path}/eagle.app.v6.irom0.text.bin
+tools.esptool.upload.pattern="{path}/{cmd}" -p {serial.port.file} -b {upload.speed} write_flash 0x00000 {build.path}/eagle.app.flash.bin 0x10000 {build.path}/eagle.app.v6.irom0.text.bin
+
+tools.esptool.program.params.verbose=-v
+tools.esptool.program.params.quiet=-q -q
+tools.esptool.program.pattern="{path}/{cmd}" 
+							  
+tools.esptool.erase.params.verbose=-v
+tools.esptool.erase.params.quiet=
+tools.esptool.erase.pattern="{path}/{cmd}" -p {serial.port.file} -b {upload.speed} write_flash 0x00000 "{binpath}/boot_v1.3(b3).bin" write_flash 0x7c000 "{binpath}esp_init_data_default.bin" 0x7e000 "{binpath}/blank.bin"
+
+tools.esptool.bootloader.params.verbose=-v
+tools.esptool.bootloader.params.quiet=
+tools.esptool.bootloader.pattern="{path}/{cmd}" -v
